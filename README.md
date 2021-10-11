@@ -40,7 +40,7 @@ ea79103308f0   bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8       "/entryp
 - `ipconfig`로 이더넷 어댑터(WSL)의 ipv4를 확인한다.
 - 웹 브라우저로 해당 ip의 :9870 포트로 접속한다.
 - 다음과 같은 화면이 나오면 성공적으로 접속한 것이다.
-  ![name_node](./img/name_node.png)
+  ![name_node](img/name_node.PNG)
 
 ## jar 파일을 다운 및 네임노드 컨테이너에 복사하기
 
