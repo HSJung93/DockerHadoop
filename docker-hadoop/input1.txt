@@ -1,0 +1,3 @@
+hello this is test file for 
+docker hadoop practices
+hello hadoop and docker

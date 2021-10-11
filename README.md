@@ -42,67 +42,113 @@ ea79103308f0   bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8       "/entryp
 - 다음과 같은 화면이 나오면 성공적으로 접속한 것이다.
   ![name_node](./img/name_node.png)
 
-## Supported Hadoop Versions
+## jar 파일을 다운 및 네임노드 컨테이너에 복사하기
 
-See repository branches for supported hadoop versions
+- `wget https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-mapreduce-examples/2.7.1/hadoop-mapreduce-examples-2.7.1-sources.jar`로 파일 다운로드(리눅스)
+- `docker cp hadoop-mapreduce-examples-2.7.1-sources.jar namenode:/tmp/`로 로컬에서 컨테이너로 파일을 복제한다.
+- 테스트에 사용할 `input1.txt`를 만든 뒤 `docker cp input1.txt namenode:/tmp/`로 복제한다.
 
-## Quick Start
+## hdfs에 파일 업로드
 
-To deploy an example HDFS cluster, run:
+- `docker exec -it namenode /bin/bash`로 다시 네임노드 컨테이너에 명령어를 수행한다.
+- `cd /tmp/`로 이동 후, `cat input1.txt`로 확인하면 해당 파일이 복제된 것을 확인할 수 있다.
+- input1.txt 파일을 hdfs로 업로드 하기 위해 `hdfs dfs -mkdir /user/root/input` 명령어로 hdfs에 디렉토리를 만든다.
+- `hdfs dfs -put input1.txt /user/root/input/`로 input1.txt 파일을 hdfs에 업로드 한다.
+- 역시 `hdfs dfs -cat /user/root/input/input1.txt`로 확인할 수 있다.
 
-```
-  docker-compose up
-```
+## 맵리듀스 작업 실행하기
 
-Run example wordcount job:
-
-```
-  make wordcount
-```
-
-Or deploy in swarm:
-
-```
-docker stack deploy -c docker-compose-v3.yml hadoop
-```
-
-`docker-compose` creates a docker network that can be found by running `docker network list`, e.g. `dockerhadoop_default`.
-
-Run `docker network inspect` on the network (e.g. `dockerhadoop_default`) to find the IP the hadoop interfaces are published on. Access these interfaces with the following URLs:
-
-- Namenode: http://<dockerhadoop_IP_address>:9870/dfshealth.html#tab-overview
-- History server: http://<dockerhadoop_IP_address>:8188/applicationhistory
-- Datanode: http://<dockerhadoop_IP_address>:9864/
-- Nodemanager: http://<dockerhadoop_IP_address>:8042/node
-- Resource manager: http://<dockerhadoop_IP_address>:8088/
-
-## Configure Environment Variables
-
-The configuration parameters can be specified in the hadoop.env file or as environmental variables for specific services (e.g. namenode, datanode etc.):
+- hadoop jar 커맨드로 맵리듀스 jar 파일을 실행하고 클래스 파일을 불러온다. 만들어 놓은 input 디렉토리를 사용하고 output 디렉토리를 생성한다. : `hadoop jar hadoop-mapreduce-examples-2.7.1-sources.jar org.apache.hadoop.examples.WordCount input output`
+- 다음과 같은 명령어가 출력되면 성공적으로 맵리듀스 작업을 실행한 것이다.
 
 ```
-  CORE_CONF_fs_defaultFS=hdfs://namenode:8020
+2021-10-11 12:01:05,955 INFO client.RMProxy: Connecting to ResourceManager at resourcemanager/172.18.0.3:8032
+2021-10-11 12:01:06,091 INFO client.AHSProxy: Connecting to Application History server at historyserver/172.18.0.6:10200
+2021-10-11 12:01:06,242 INFO mapreduce.JobResourceUploader: Disabling Erasure Coding for path: /tmp/hadoop-yarn/staging/root/.staging/job_1633947212148_0001
+2021-10-11 12:01:06,321 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false
+2021-10-11 12:01:06,412 INFO input.FileInputFormat: Total input files to process : 1
+2021-10-11 12:01:06,434 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false
+2021-10-11 12:01:06,451 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false
+2021-10-11 12:01:06,458 INFO mapreduce.JobSubmitter: number of splits:1
+2021-10-11 12:01:06,543 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = false, remoteHostTrusted = false
+2021-10-11 12:01:06,556 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1633947212148_0001
+2021-10-11 12:01:06,556 INFO mapreduce.JobSubmitter: Executing with tokens: []
+2021-10-11 12:01:06,698 INFO conf.Configuration: resource-types.xml not found
+2021-10-11 12:01:06,698 INFO resource.ResourceUtils: Unable to find 'resource-types.xml'.
+2021-10-11 12:01:07,094 INFO impl.YarnClientImpl: Submitted application application_1633947212148_0001
+2021-10-11 12:01:07,127 INFO mapreduce.Job: The url to track the job: http://resourcemanager:8088/proxy/application_1633947212148_0001/
+2021-10-11 12:01:07,127 INFO mapreduce.Job: Running job: job_1633947212148_0001
+2021-10-11 12:01:13,200 INFO mapreduce.Job: Job job_1633947212148_0001 running in uber mode : false
+2021-10-11 12:01:13,201 INFO mapreduce.Job:  map 0% reduce 0%
+2021-10-11 12:01:18,246 INFO mapreduce.Job:  map 100% reduce 0%
+2021-10-11 12:01:22,279 INFO mapreduce.Job:  map 100% reduce 100%
+2021-10-11 12:01:22,292 INFO mapreduce.Job: Job job_1633947212148_0001 completed successfully
+2021-10-11 12:01:22,361 INFO mapreduce.Job: Counters: 54
+        File System Counters
+                FILE: Number of bytes read=100
+                FILE: Number of bytes written=458745
+                FILE: Number of read operations=0
+                FILE: Number of large read operations=0
+                FILE: Number of write operations=0
+                HDFS: Number of bytes read=190
+                HDFS: Number of bytes written=76
+                HDFS: Number of read operations=8
+                HDFS: Number of large read operations=0
+                HDFS: Number of write operations=2
+                HDFS: Number of bytes read erasure-coded=0
+        Job Counters
+                Launched map tasks=1
+                Launched reduce tasks=1
+                Rack-local map tasks=1
+                Total time spent by all maps in occupied slots (ms)=6436
+                Total time spent by all reduces in occupied slots (ms)=13056
+                Total time spent by all map tasks (ms)=1609
+                Total time spent by all reduce tasks (ms)=1632
+                Total vcore-milliseconds taken by all map tasks=1609
+                Total vcore-milliseconds taken by all reduce tasks=1632
+                Total megabyte-milliseconds taken by all map tasks=6590464
+                Total megabyte-milliseconds taken by all reduce tasks=13369344
+        Map-Reduce Framework
+                Map input records=3
+                Map output records=13
+                Map output bytes=128
+                Map output materialized bytes=92
+                Input split bytes=112
+                Combine input records=13
+                Combine output records=10
+                Reduce input groups=10
+                Reduce shuffle bytes=92
+                Reduce input records=10
+                Reduce output records=10
+                Spilled Records=20
+                Shuffled Maps =1
+                Failed Shuffles=0
+                Merged Map outputs=1
+                GC time elapsed (ms)=71
+                CPU time spent (ms)=720
+                Physical memory (bytes) snapshot=548495360
+                Virtual memory (bytes) snapshot=13576130560
+                Total committed heap usage (bytes)=489684992
+                Peak Map Physical memory (bytes)=318685184
+                Peak Map Virtual memory (bytes)=5113307136
+                Peak Reduce Physical memory (bytes)=229810176
+                Peak Reduce Virtual memory (bytes)=8462823424
+        Shuffle Errors
+                BAD_ID=0
+                CONNECTION=0
+                IO_ERROR=0
+                WRONG_LENGTH=0
+                WRONG_MAP=0
+                WRONG_REDUCE=0
+        File Input Format Counters
+                Bytes Read=78
+        File Output Format Counters
+                Bytes Written=76
 ```
 
-CORE_CONF corresponds to core-site.xml. fs_defaultFS=hdfs://namenode:8020 will be transformed into:
+- exit로 네임노드 컨테이너에서 접속을 종료한다.
 
-```
-  <property><name>fs.defaultFS</name><value>hdfs://namenode:8020</value></property>
-```
+## 도커 컴포즈로 컨테이너 종료
 
-To define dash inside a configuration parameter, use triple underscore, such as YARN*CONF_yarn_log\*\*\_aggregation*\*\*enable=true (yarn-site.xml):
-
-```
-  <property><name>yarn.log-aggregation-enable</name><value>true</value></property>
-```
-
-The available configurations are:
-
-- /etc/hadoop/core-site.xml CORE_CONF
-- /etc/hadoop/hdfs-site.xml HDFS_CONF
-- /etc/hadoop/yarn-site.xml YARN_CONF
-- /etc/hadoop/httpfs-site.xml HTTPFS_CONF
-- /etc/hadoop/kms-site.xml KMS_CONF
-- /etc/hadoop/mapred-site.xml MAPRED_CONF
-
-If you need to extend some other configuration file, refer to base/entrypoint.sh bash script.
+- `docker-compose down`으로 모든 컨테이너를 종료할 수 있다.
+- `docker container ls`로 확인해보면 모든 컨테이너가 종료되었다.
