@@ -151,4 +151,15 @@ ea79103308f0   bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8       "/entryp
 ## 도커 컴포즈로 컨테이너 종료
 
 - `docker-compose down`으로 모든 컨테이너를 종료할 수 있다.
+
+```
+[+] Running 6/6
+ - Container historyserver        Removed                                                                                                    11.6s
+ - Container namenode             Removed                                                                                                    12.2s
+ - Container datanode             Removed                                                                                                    12.1s
+ - Container resourcemanager      Removed                                                                                                    11.9s
+ - Container nodemanager          Removed                                                                                                    11.6s
+ - Network docker-hadoop_default  Removed                                                                                                     0.6s
+```
+
 - `docker container ls`로 확인해보면 모든 컨테이너가 종료되었다.
