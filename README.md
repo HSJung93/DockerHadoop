@@ -224,3 +224,12 @@ Location: hdfs://namenode:8020/user/hive/warehouse/training.db/fruits
 
 - `!quit` 명령어로 hive를 종료하고 `exit`로 컨테이너로 부터 나온다.
 - `docker compose down`으로 컨테이너를 종료한다.
+
+# 도커 카프카
+
+- 각기 다른 포트로 3개의 주키퍼와 카프카 서비스를 동작시키는 docker-compose.yml 파일을 작성한다.
+- 도커허브의 confluentinc/cp-kafka 이미지를 사용한다.
+- `docker-compose up -d` 명령어로 detachable 모드로 실행한다.
+- `docker container ls`로 확인할 수 있다.
+- `telnet localhost 12181`, `telnet localhost 22181`, `telnet localhost 32181`, `telnet localhost 19092`
+- `docker-compose down`으로 종료한다.
