@@ -195,7 +195,7 @@ CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS  
 
 # 도커 하이브
 
-- `mkdir docker-hive`로 생성 `cd docker-hive`로 이동 후 'git clone https://github.com/big-data-europe/docker-hive.git'로 해당 파일 다운로드한다.
+- `mkdir docker-hive`로 생성 `cd docker-hive`로 이동 후 `git clone https://github.com/big-data-europe/docker-hive.git`로 해당 파일 다운로드한다.
 - `ls`로 `docker-compose.yml` 파일 등을 확인하면 여러 서비스(namenode, datanode, hive-server 등)에 대응되는 컨테이너들을 확인할 수 있다.
 - `docker-compose up -d`로 이미지들을 다운로드하고 컨테이너들을 다운로드 한다. `docker container ls`로 모두 업 되고 러닝되는 것을 확인한다.
 
